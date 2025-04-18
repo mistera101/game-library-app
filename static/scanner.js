@@ -5,13 +5,15 @@ function startScanner() {
     const statusText = document.getElementById("scan-status");
     const barcodeInput = document.getElementById("barcode");
 
+    // Make scanner visible
     scannerContainer.style.display = "block";
     statusText.textContent = "📸 Initializing camera...";
 
+    // Stop any previous scanner instance before starting new
     if (scannerInstance) {
-        scannerInstance.stop().then(() => {
-            scannerInstance.clear();
-        });
+        scannerInstance.stop()
+            .then(() => scannerInstance.clear())
+            .catch(e => console.warn("Scanner cleanup issue:", e));
     }
 
     scannerInstance = new Html5Qrcode("reader");
@@ -29,15 +31,20 @@ function startScanner() {
             console.log("✅ Barcode detected:", decodedText);
             barcodeInput.value = decodedText;
             statusText.textContent = "✅ Barcode scanned: " + decodedText;
+
             scannerInstance.stop().then(() => {
                 scannerContainer.style.display = "none";
-            });
+                return scannerInstance.clear();
+            }).catch(e => console.warn("Stop error:", e));
         },
         (errorMessage) => {
-            // Suppress frequent errors
+            // Optional: log only meaningful scan errors
+            if (errorMessage && !errorMessage.includes("No barcode found")) {
+                console.warn("🔍 Scan error:", errorMessage);
+            }
         }
     ).catch(err => {
-        console.error("🚫 Camera error:", err);
+        console.error("🚫 Failed to start camera:", err);
         statusText.textContent = "❌ Camera error: " + err;
     });
 }

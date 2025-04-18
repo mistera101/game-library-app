@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Game Library</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -16,15 +17,17 @@
 
         input, select, button {
             margin: 0.25rem 0.5rem 0.25rem 0;
-            padding: 0.4rem;
+            padding: 0.5rem;
             font-size: 1rem;
         }
 
         #reader {
             width: 100%;
             max-width: 400px;
+            height: auto;
             margin-top: 0.5rem;
             border: 2px solid #444;
+            background: #000;
         }
 
         #scan-status {
@@ -47,6 +50,19 @@
 
         a.camera-link:hover {
             text-decoration: underline;
+        }
+
+        @media screen and (max-width: 480px) {
+            input, select, button {
+                display: block;
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            .camera-link, button[type="button"] {
+                width: 100%;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -98,8 +114,8 @@
         <p>No games in your library yet.</p>
     {% endif %}
 
-    <!-- Load Scanner -->
-    <script src="/static/html5-qrcode.min.js"></script>
+    <!-- Load Scanner Scripts -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="/static/scanner.js"></script>
 </body>
 </html>
