@@ -37,6 +37,17 @@
         ul {
             padding-left: 1.2rem;
         }
+
+        a.camera-link {
+            display: inline-block;
+            margin: 0.25rem 0.5rem;
+            font-size: 0.95rem;
+            color: #007bff;
+            text-decoration: none;
+        }
+        a.camera-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -57,6 +68,7 @@
         </select>
 
         <button type="button" onclick="startScanner()">📷 Scan Barcode</button>
+        <a href="/static/test-camera.html" target="_blank" class="camera-link">👀 Open Camera Preview</a>
         <button type="submit">Add Game</button>
     </form>
 
