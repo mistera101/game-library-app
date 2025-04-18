@@ -1,121 +1,177 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Game Library</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: sans-serif;
-            padding: 1rem;
-            background-color: #fff;
-        }
+  <title>Game Library</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
 
-        form {
-            margin-bottom: 1.5rem;
-        }
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #0f0f0f, #1a0033);
+      color: #0ff;
+      padding: 2rem;
+      text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+    }
 
-        input, select, button {
-            margin: 0.25rem 0.5rem 0.25rem 0;
-            padding: 0.5rem;
-            font-size: 1rem;
-        }
+    h1, h2, h3 {
+      text-align: center;
+      color: #f0f;
+      text-shadow: 0 0 5px #f0f, 0 0 10px #f0f;
+    }
 
-        #reader {
-            width: 100%;
-            max-width: 400px;
-            height: auto;
-            margin-top: 0.5rem;
-            border: 2px solid #444;
-            background: #000;
-        }
+    form {
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid #0ff;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 0 20px #0ff;
+      animation: pulse 3s infinite ease-in-out;
+    }
 
-        #scan-status {
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 0.5rem;
-        }
+    input, select, button, a.camera-link {
+      display: block;
+      width: 100%;
+      margin: 0.75rem 0;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border-radius: 12px;
+      border: 2px solid #f0f;
+      background: #000;
+      color: #0ff;
+      text-shadow: 0 0 3px #0ff;
+    }
 
-        ul {
-            padding-left: 1.2rem;
-        }
+    input:focus, select:focus {
+      outline: none;
+      box-shadow: 0 0 10px #f0f;
+    }
 
-        a.camera-link {
-            display: inline-block;
-            margin: 0.25rem 0.5rem;
-            font-size: 0.95rem;
-            color: #007bff;
-            text-decoration: none;
-        }
+    button {
+      background: #0f0;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
 
-        a.camera-link:hover {
-            text-decoration: underline;
-        }
+    button:hover {
+      background: #ff0;
+    }
 
-        @media screen and (max-width: 480px) {
-            input, select, button {
-                display: block;
-                width: 100%;
-                margin-bottom: 0.5rem;
-            }
+    a.camera-link {
+      text-align: center;
+      background: #111;
+      color: #0ff;
+      border: 2px dashed #0ff;
+      text-decoration: none;
+      font-weight: bold;
+    }
 
-            .camera-link, button[type="button"] {
-                width: 100%;
-                text-align: center;
-            }
-        }
-    </style>
+    a.camera-link:hover {
+      background: #222;
+    }
+
+    #scanner-container {
+      margin-top: 1rem;
+      border: 2px solid #0ff;
+      border-radius: 12px;
+      padding: 1rem;
+      background: #000;
+      box-shadow: 0 0 15px #0ff;
+    }
+
+    #reader {
+      border-radius: 12px;
+      width: 100%;
+      border: 2px solid #f0f;
+    }
+
+    #scan-status {
+      color: #0ff;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      background: #111;
+      border: 2px solid #0ff;
+      margin: 0.5rem 0;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #0ff;
+    }
+
+    li a {
+      color: #f0f;
+      margin-right: 0.5rem;
+      text-decoration: none;
+    }
+
+    li a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 15px #0ff; }
+      50% { box-shadow: 0 0 30px #0ff; }
+      100% { box-shadow: 0 0 15px #0ff; }
+    }
+  </style>
 </head>
 <body>
-    <h1>Game Library</h1>
+  <h1>🎮 Game Library</h1>
 
-    <form action="/add" method="post">
-        <input name="name" placeholder="Game Name" required>
-        <input id="barcode" name="barcode" placeholder="Barcode" required>
+  <form action="/add" method="post">
+    <input name="name" placeholder="🎮 Game Name" required>
+    <input id="barcode" name="barcode" placeholder="📸 Barcode" required>
 
-        <select name="category" required>
-            <option value="">--Select Category--</option>
-            <option value="Sports">Sports</option>
-            <option value="Action">Action</option>
-            <option value="Racing">Racing</option>
-            <option value="Adventure">Adventure</option>
-            <option value="Fighting">Fighting</option>
-            <option value="Shooter">Shooter</option>
-        </select>
+    <select name="category" required>
+      <option value="">--Select Category--</option>
+      <option value="Sports">Sports</option>
+      <option value="Action">Action</option>
+      <option value="Racing">Racing</option>
+      <option value="Adventure">Adventure</option>
+      <option value="Fighting">Fighting</option>
+      <option value="Shooter">Shooter</option>
+    </select>
 
-        <button type="button" onclick="startScanner()">📷 Scan Barcode</button>
-        <a href="/static/test-camera.html" target="_blank" class="camera-link">👀 Open Camera Preview</a>
-        <button type="submit">Add Game</button>
-    </form>
+    <button type="button" onclick="startScanner()">📷 Scan Barcode</button>
+    <a href="/static/test-camera.html" target="_blank" class="camera-link">👀 Open Camera Preview</a>
+    <button type="submit">➕ Add Game</button>
+  </form>
 
-    <!-- Scanner View -->
-    <div id="scanner-container" style="display: none;">
-        <div id="reader"></div>
-        <p id="scan-status">📷 Waiting for camera access...</p>
-    </div>
+  <div id="scanner-container" style="display: none;">
+    <div id="reader"></div>
+    <p id="scan-status">📸 Waiting for camera access...</p>
+  </div>
 
-    <hr>
-    <h2>Your Collection</h2>
+  <hr>
+  <h2>📃 Your Collection</h2>
+  {% if categories %}
+    {% for category, games in categories.items() %}
+      <h3>✨ {{ category }}</h3>
+      <ul>
+      {% for game in games %}
+        <li>
+          <strong>{{ game.name }}</strong> ({{ game.barcode }})<br>
+          <a href="/edit/{{ game.id }}">✏️ Edit</a>
+          <a href="/delete/{{ game.id }}" onclick="return confirm('Delete this game?');">🗑️ Delete</a>
+        </li>
+      {% endfor %}
+      </ul>
+    {% endfor %}
+  {% else %}
+    <p>No games in your library yet.</p>
+  {% endif %}
 
-    {% if categories %}
-        {% for category, games in categories.items() %}
-            <h3>{{ category }}</h3>
-            <ul>
-                {% for game in games %}
-                    <li>
-                        <strong>{{ game.name }}</strong> ({{ game.barcode }})<br>
-                        <a href="/edit/{{ game.id }}">✏️ Edit</a> |
-                        <a href="/delete/{{ game.id }}" onclick="return confirm('Are you sure you want to delete this game?');">🗑️ Delete</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endfor %}
-    {% else %}
-        <p>No games in your library yet.</p>
-    {% endif %}
-
-    <!-- Load Scanner Scripts -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="/static/scanner.js"></script>
+  <script src="/static/html5-qrcode.min.js"></script>
+  <script src="/static/scanner.js"></script>
 </body>
 </html>
