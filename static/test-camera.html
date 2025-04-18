@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Camera Test</title>
+</head>
+<body>
+    <h1>Camera Preview Test</h1>
+    <video id="preview" autoplay muted playsinline style="width: 100%; height: auto;"></video>
+
+    <script>
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            .then(function(stream) {
+                const video = document.getElementById("preview");
+                video.srcObject = stream;
+                console.log("✅ Stream attached successfully");
+            })
+            .catch(function(err) {
+                console.error("❌ Error accessing camera:", err);
+                alert("Camera error: " + err.message);
+            });
+    </script>
+</body>
+</html>
