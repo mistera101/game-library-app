@@ -1,4 +1,4 @@
-let html5QrcodeScanner;
+let scannerInstance;
 
 function startScanner() {
     const scannerContainer = document.getElementById("scanner-container");
@@ -6,43 +6,38 @@ function startScanner() {
     const barcodeInput = document.getElementById("barcode");
 
     scannerContainer.style.display = "block";
-    statusText.innerText = "📸 Initializing camera...";
+    statusText.textContent = "📸 Initializing camera...";
 
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        statusText.innerText = "❌ Camera not supported by your browser.";
-        alert("⚠️ Sorry, your browser doesn't support camera access.");
-        return;
+    if (scannerInstance) {
+        scannerInstance.stop().then(() => {
+            scannerInstance.clear();
+        });
     }
+
+    scannerInstance = new Html5Qrcode("reader");
 
     const config = {
         fps: 10,
-        qrbox: { width: 250, height: 150 },
-        aspectRatio: 1.7778,
-        facingMode: "environment"
+        qrbox: { width: 250, height: 100 },
+        formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13],
     };
 
-    html5QrcodeScanner = new Html5Qrcode("reader");
-
-    html5QrcodeScanner.start(
+    scannerInstance.start(
         { facingMode: "environment" },
         config,
-        (decodedText, decodedResult) => {
-            console.log("✅ Barcode Scanned:", decodedText);
+        (decodedText) => {
+            console.log("✅ Barcode detected:", decodedText);
             barcodeInput.value = decodedText;
-            statusText.innerText = `✅ Scanned: ${decodedText}`;
-
-            html5QrcodeScanner.stop().then(() => {
-                document.getElementById("scanner-container").style.display = "none";
-                console.log("🛑 Scanner stopped.");
-            }).catch(err => {
-                console.error("Failed to stop scanner:", err);
+            statusText.textContent = "✅ Barcode scanned: " + decodedText;
+            scannerInstance.stop().then(() => {
+                scannerContainer.style.display = "none";
             });
         },
         (errorMessage) => {
-            console.warn("📭 No barcode detected:", errorMessage);
+            // Suppress frequent errors
         }
     ).catch(err => {
-        console.error("🚫 Scanner failed to start:", err);
-        statusText.innerText = "❌ Scanner failed to start.";
+        console.error("🚫 Camera error:", err);
+        statusText.textContent = "❌ Camera error: " + err;
     });
 }
