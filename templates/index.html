@@ -20,12 +20,11 @@
             font-size: 1rem;
         }
 
-        video#scanner {
+        #reader {
             width: 100%;
-            height: 300px;
-            object-fit: cover;
+            max-width: 400px;
+            margin-top: 0.5rem;
             border: 2px solid #444;
-            background: #000;
         }
 
         #scan-status {
@@ -45,6 +44,7 @@
             color: #007bff;
             text-decoration: none;
         }
+
         a.camera-link:hover {
             text-decoration: underline;
         }
@@ -73,8 +73,8 @@
     </form>
 
     <!-- Scanner View -->
-    <div id="scanner-container" style="display: none; max-width: 100%;">
-        <video id="scanner" autoplay muted playsinline></video>
+    <div id="scanner-container" style="display: none;">
+        <div id="reader"></div>
         <p id="scan-status">📷 Waiting for camera access...</p>
     </div>
 
@@ -87,18 +87,4 @@
             {% for game in games %}
                 <li>
                     <strong>{{ game.name }}</strong> ({{ game.barcode }})<br>
-                    <a href="/edit/{{ game.id }}">✏️ Edit</a> |
-                    <a href="/delete/{{ game.id }}" onclick="return confirm('Are you sure you want to delete this game?');">🗑️ Delete</a>
-                </li>
-            {% endfor %}
-            </ul>
-        {% endfor %}
-    {% else %}
-        <p>No games in your library yet.</p>
-    {% endif %}
-
-    <!-- Load QuaggaJS and Scanner -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
-    <script src="/static/scanner.js"></script>
-</body>
-</html>
+                    <a href="/edit/{{ game.id }}">✏️ Edit</a
