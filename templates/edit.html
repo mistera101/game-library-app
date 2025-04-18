@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Game</title>
+</head>
+<body>
+    <h1>Edit Game</h1>
+    <form action="/edit/{{ game.id }}" method="post">
+        <input type="text" name="name" value="{{ game.name }}" required>
+        <input type="text" name="barcode" value="{{ game.barcode }}" required>
+        
+        <select name="category" required>
+            <option value="">--Select Category--</option>
+            {% for cat in ["Sports", "Action", "Racing", "Adventure", "Fighting", "Shooter"] %}
+                <option value="{{ cat }}" {% if game.category == cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <a href="/">← Back to Library</a>
+</body>
+</html>

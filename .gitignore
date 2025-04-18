@@ -1,0 +1,13 @@
+# Ignore Python cache and virtual env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.env
+
+# Ignore macOS junk
+.DS_Store
+
+# Ignore DB if you don't want to push it
+*.db
