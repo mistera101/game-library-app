@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Game Library</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
@@ -85,6 +86,7 @@
     #reader {
       border-radius: 12px;
       width: 100%;
+      max-width: 100%;
       border: 2px solid #f0f;
     }
 
@@ -147,31 +149,34 @@
     <button type="submit">➕ Add Game</button>
   </form>
 
+  <!-- Scanner View -->
   <div id="scanner-container" style="display: none;">
     <div id="reader"></div>
-    <p id="scan-status">📸 Waiting for camera access...</p>
+    <p id="scan-status">📷 Waiting for camera access...</p>
   </div>
 
   <hr>
-  <h2>📃 Your Collection</h2>
+  <h2>📋 Your Collection</h2>
+
   {% if categories %}
     {% for category, games in categories.items() %}
       <h3>✨ {{ category }}</h3>
       <ul>
-      {% for game in games %}
-        <li>
-          <strong>{{ game.name }}</strong> ({{ game.barcode }})<br>
-          <a href="/edit/{{ game.id }}">✏️ Edit</a>
-          <a href="/delete/{{ game.id }}" onclick="return confirm('Delete this game?');">🗑️ Delete</a>
-        </li>
-      {% endfor %}
+        {% for game in games %}
+          <li>
+            <strong>{{ game.name }}</strong> ({{ game.barcode }})<br>
+            <a href="/edit/{{ game.id }}">✏️ Edit</a>
+            <a href="/delete/{{ game.id }}" onclick="return confirm('Delete this game?');">🗑️ Delete</a>
+          </li>
+        {% endfor %}
       </ul>
     {% endfor %}
   {% else %}
     <p>No games in your library yet.</p>
   {% endif %}
 
-  <script src="/static/html5-qrcode.min.js"></script>
+  <!-- ✅ Working CDN for Scanner -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
   <script src="/static/scanner.js"></script>
 </body>
 </html>
