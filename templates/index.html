@@ -80,11 +80,26 @@
 
     <hr>
     <h2>Your Collection</h2>
+
     {% if categories %}
         {% for category, games in categories.items() %}
             <h3>{{ category }}</h3>
             <ul>
-            {% for game in games %}
-                <li>
-                    <strong>{{ game.name }}</strong> ({{ game.barcode }})<br>
-                    <a href="/edit/{{ game.id }}">✏️ Edit</a
+                {% for game in games %}
+                    <li>
+                        <strong>{{ game.name }}</strong> ({{ game.barcode }})<br>
+                        <a href="/edit/{{ game.id }}">✏️ Edit</a> |
+                        <a href="/delete/{{ game.id }}" onclick="return confirm('Are you sure you want to delete this game?');">🗑️ Delete</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    {% else %}
+        <p>No games in your library yet.</p>
+    {% endif %}
+
+    <!-- Load Scanner -->
+    <script src="/static/html5-qrcode.min.js"></script>
+    <script src="/static/scanner.js"></script>
+</body>
+</html>
