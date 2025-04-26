@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Form, Request, UploadFile, File
+from fastapi import FastAPI, Form, Request, File, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -6,6 +6,7 @@ from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.sql import func
 from starlette.status import HTTP_303_SEE_OTHER
+from datetime import datetime
 import os
 
 app = FastAPI()
@@ -18,8 +19,9 @@ engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(bind=engine)
 session = SessionLocal()
 
-# Create the covers directory if it doesn't exist
-os.makedirs("static/covers", exist_ok=True)
+# Create uploads folder if it doesn't exist
+UPLOAD_FOLDER = "static/uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 class Game(Base):
     __tablename__ = "games"
@@ -29,7 +31,7 @@ class Game(Base):
     category = Column(String, index=True)
     status = Column(String, default="Wishlist")
     date_added = Column(DateTime(timezone=True), server_default=func.now())
-    cover_image = Column(String, nullable=True)  # 🔥 Optional field now
+    cover_image = Column(String, nullable=True)
 
 Base.metadata.create_all(bind=engine)
 
@@ -66,26 +68,26 @@ async def add_game(
     barcode: str = Form(...),
     category: str = Form(...),
     status: str = Form(...),
-    cover_image: UploadFile = File(None)  # 🌟 Accept optional image
+    cover_image: UploadFile = File(None)
 ):
     existing = session.query(Game).filter(Game.barcode == barcode).first()
     if existing:
         return RedirectResponse("/?error=You already own this game!", status_code=HTTP_303_SEE_OTHER)
-    
-    image_path = None
-    if cover_image:
-        filename = cover_image.filename
-        save_path = f"static/covers/{filename}"
-        with open(save_path, "wb") as buffer:
-            buffer.write(await cover_image.read())
-        image_path = save_path
+
+    cover_image_path = None
+    if cover_image and cover_image.filename:  # 🔥 Important: Safe check!
+        file_location = f"{UPLOAD_FOLDER}/{cover_image.filename}"
+        with open(file_location, "wb+") as file_object:
+            file_object.write(await cover_image.read())
+        cover_image_path = file_location
 
     game = Game(
         name=name,
         barcode=barcode,
         category=category,
         status=status,
-        cover_image=image_path
+        cover_image=cover_image_path,
+        date_added=datetime.now()
     )
     session.add(game)
     session.commit()
@@ -100,10 +102,6 @@ def get_games():
 def delete_game(game_id: int):
     game = session.query(Game).filter(Game.id == game_id).first()
     if game:
-        # Optional: delete cover image from disk too
-        if game.cover_image and os.path.exists(game.cover_image):
-            os.remove(game.cover_image)
-
         session.delete(game)
         session.commit()
     return RedirectResponse("/", status_code=HTTP_303_SEE_OTHER)
@@ -114,13 +112,12 @@ def edit_game_form(request: Request, game_id: int):
     return templates.TemplateResponse("edit.html", {"request": request, "game": game})
 
 @app.post("/edit/{game_id}")
-async def update_game(
+def update_game(
     game_id: int,
     name: str = Form(...),
     barcode: str = Form(...),
     category: str = Form(...),
-    status: str = Form(...),
-    cover_image: UploadFile = File(None)  # Optional new cover upload
+    status: str = Form(...)
 ):
     game = session.query(Game).filter(Game.id == game_id).first()
     if game:
@@ -128,16 +125,7 @@ async def update_game(
         game.barcode = barcode
         game.category = category
         game.status = status
-
-        if cover_image:
-            filename = cover_image.filename
-            save_path = f"static/covers/{filename}"
-            with open(save_path, "wb") as buffer:
-                buffer.write(await cover_image.read())
-            game.cover_image = save_path
-
         session.commit()
-
     return RedirectResponse("/", status_code=HTTP_303_SEE_OTHER)
 
 @app.exception_handler(404)
