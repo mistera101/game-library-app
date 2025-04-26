@@ -267,6 +267,17 @@ function clearSearch() {
   document.getElementById('search-bar').value = '';
   filterGames();
 }
+
+// ✅ Handle success or error popup
+window.addEventListener('load', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('success') === '1') {
+        alert('✅ Game added successfully!');
+    }
+    if (params.get('error')) {
+        alert('❌ ' + params.get('error'));
+    }
+});
 </script>
 
 </body>
