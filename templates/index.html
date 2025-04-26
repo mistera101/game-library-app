@@ -104,15 +104,23 @@
     li {
       background: #111;
       border: 2px solid #0ff;
-      margin: 0.5rem 0;
+      margin: 1rem 0;
       padding: 1rem;
-      border-radius: 12px;
+      border-radius: 16px;
       box-shadow: 0 0 10px #0ff;
+      text-align: center;
+    }
+
+    li img {
+      width: 120px;
+      height: auto;
+      border-radius: 12px;
+      margin-bottom: 0.5rem;
     }
 
     li a {
       color: #f0f;
-      margin-right: 0.5rem;
+      margin: 0 0.5rem;
       text-decoration: none;
     }
 
@@ -158,23 +166,6 @@
       top: 60px;
     }
 
-    .pagination {
-      text-align: center;
-      margin-top: 2rem;
-    }
-
-    .pagination a {
-      color: #0ff;
-      margin: 0 0.5rem;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 1.2rem;
-    }
-
-    .pagination a:hover {
-      color: #ff0;
-    }
-
     @keyframes pulse {
       0% { box-shadow: 0 0 15px #0ff; }
       50% { box-shadow: 0 0 30px #0ff; }
@@ -184,12 +175,12 @@
 </head>
 <body>
 
-<!-- Toast Popup -->
+<!-- Toast -->
 <div id="toast" class="toast">✅ Game Added Successfully!</div>
 
 <h1>🎮 Game Library</h1>
 
-<form action="/add" method="post">
+<form action="/add" method="post" enctype="multipart/form-data">
   <input name="name" placeholder="🎮 Game Name" required>
   <input id="barcode" name="barcode" placeholder="📸 Barcode" required>
 
@@ -204,17 +195,19 @@
   </select>
 
   <select name="status" required>
+    <option value="">--Select Status--</option>
     <option value="Wishlist">📚 Wishlist</option>
     <option value="Played">🎮 Played</option>
     <option value="Completed">✅ Completed</option>
   </select>
+
+  <input type="file" name="cover_image" accept="image/*">
 
   <button type="button" onclick="startScanner()">📷 Scan Barcode</button>
   <a href="/static/test-camera.html" target="_blank" class="camera-link">👀 Open Camera Preview</a>
   <button type="submit">➕ Add Game</button>
 </form>
 
-<!-- Scanner Container -->
 <div id="scanner-container" style="display: none;">
   <div id="reader"></div>
   <p id="scan-status">📷 Waiting for camera access...</p>
@@ -226,31 +219,24 @@
 {% if categories %}
   {% for category, games in categories.items() %}
     <h3>✨ {{ category }}</h3>
-    <ul>
+    <ul class="game-list">
       {% for game in games %}
         <li>
-          <strong>{{ game.name }}</strong>
-          <span class="badge">{{ game.status }}</span><br>
+          {% if game.cover_image %}
+            <img src="/{{ game.cover_image }}" alt="Cover Image">
+          {% endif %}
+          <br>
+          <strong>{{ game.name }}</strong> 
+          <span class="badge">{{ game.category }}</span><br>
           📦 {{ game.barcode }}<br>
-          🕒 Added on: {{ game.date_added.strftime('%d %B %Y') }}<br>
+          🎯 Status: {{ game.status }}<br>
+          📅 Added on: {{ game.date_added.strftime('%d %B %Y') }}<br>
           <a href="/edit/{{ game.id }}">✏️ Edit</a>
           <a href="/delete/{{ game.id }}" onclick="return confirm('Delete this game?');">🗑️ Delete</a>
         </li>
       {% endfor %}
     </ul>
   {% endfor %}
-
-  <!-- Pagination -->
-  <div class="pagination">
-    {% if current_page > 1 %}
-      <a href="/?page={{ current_page - 1 }}">⬅️ Prev</a>
-    {% endif %}
-    Page {{ current_page }} of {{ total_pages }}
-    {% if current_page < total_pages %}
-      <a href="/?page={{ current_page + 1 }}">Next ➡️</a>
-    {% endif %}
-  </div>
-
 {% else %}
   <p>No games in your library yet.</p>
 {% endif %}
