@@ -31,6 +31,25 @@
       animation: pulse 3s infinite ease-in-out;
     }
 
+    .edit-form {
+      animation: fadeSlideIn 1s ease-out forwards;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid #0ff;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 0 20px #f0f;
+      transform: translateY(30px);
+      opacity: 0;
+    }
+
+    @keyframes fadeSlideIn {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
     input, select, button, a.camera-link {
       display: block;
       width: 100%;
@@ -186,32 +205,32 @@
       color: #000;
     }
 
-    #deleteModal {
+    #loader {
       position: fixed;
-      top: 0; left: 0;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      display: none;
+      background: #0f0f0f;
+      display: flex;
       justify-content: center;
       align-items: center;
       z-index: 10000;
     }
 
-    #deleteModal .modal-content {
-      background: #111;
-      padding: 2rem;
-      border: 2px solid #0ff;
-      border-radius: 12px;
-      text-align: center;
-      color: #0ff;
+    .loader-inner {
+      width: 80px;
+      height: 80px;
+      border: 6px solid #0ff;
+      border-top: 6px solid #f0f;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
       box-shadow: 0 0 20px #0ff;
-      animation: pulse 2s infinite;
     }
 
-    #deleteModal button {
-      margin: 0.5rem;
-      padding: 0.7rem 1.2rem;
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     @keyframes pulse {
@@ -228,169 +247,19 @@
     }
   </style>
 </head>
-
 <body>
 
-<h1>🎮 Game Library</h1>
-
-<form action="/add" method="post" enctype="multipart/form-data">
-  <input name="name" placeholder="🎮 Game Name" required>
-  <input id="barcode" name="barcode" placeholder="📸 Barcode" required>
-  <select name="category" required>
-    <option value="">--Select Category--</option>
-    <option value="Sports">🏅 Sports</option>
-    <option value="Action">⚔️ Action</option>
-    <option value="Racing">🏎️ Racing</option>
-    <option value="Adventure">🗺️ Adventure</option>
-    <option value="Fighting">🥊 Fighting</option>
-    <option value="Shooter">🔫 Shooter</option>
-  </select>
-  <select name="status" required>
-    <option value="Wishlist">📚 Wishlist</option>
-    <option value="Played">🎮 Played</option>
-    <option value="Completed">🏆 Completed</option>
-  </select>
-  <input type="file" id="cover_image" name="cover_image" accept="image/*" onchange="previewCoverImage()">
-  <img id="cover_preview" alt="Cover Preview">
-  <button type="button" onclick="startScanner()">📷 Scan Barcode</button>
-  <a href="/static/test-camera.html" target="_blank" class="camera-link">👀 Open Camera Preview</a>
-  <button type="submit">➕ Add Game</button>
-</form>
-
-<div class="search-box">
-  <input type="text" id="search-bar" placeholder="🔍 Search games by name or barcode..." onkeyup="filterGames()">
-  <button type="button" onclick="clearSearch()">❌ Clear Search</button>
-</div>
-
-<div id="scanner-container">
-  <div id="reader"></div>
-  <p id="scan-status">📷 Waiting for camera access...</p>
-</div>
-
-<hr>
-<h2>📋 Your Collection</h2>
-
-{% if categories %}
-  {% for category, games in categories.items() %}
-    <h3>✨ {{ category }}</h3>
-    <ul>
-      {% for game in games %}
-        <li>
-          <strong>{{ game.name }}</strong> 
-          <span class="badge">{{ game.category }}</span><br>
-          📦 {{ game.barcode }}<br>
-          📅 Added: {{ game.date_added.strftime('%Y-%m-%d') if game.date_added else 'N/A' }}<br>
-          🎯 Status: {{ game.status }}<br>
-          {% if game.cover_image %}
-            <img src="/{{ game.cover_image }}" alt="Cover Image" style="max-width: 150px; margin-top: 0.5rem; border-radius: 8px;">
-          {% endif %}
-          <br>
-          <a href="/edit/{{ game.id }}">✏️ Edit</a> |
-          <a href="#" onclick="openDeleteModal('/delete/{{ game.id }}')">🗑️ Delete</a>
-        </li>
-      {% endfor %}
-    </ul>
-  {% endfor %}
-{% else %}
-  <p>No games in your library yet.</p>
-{% endif %}
-
-<div id="toast"></div>
-
-<!-- 🔥 Modal -->
-<div id="deleteModal">
-  <div class="modal-content">
-    <h3>🛑 Confirm Deletion</h3>
-    <p>Are you sure you want to delete this game?</p>
-    <button onclick="confirmDelete()">✅ Yes, Delete</button>
-    <button onclick="closeModal()">❌ Cancel</button>
-  </div>
-</div>
-
-<!-- 🔥 Back to Top Button -->
-<button onclick="scrollToTop()" id="backToTop" title="Go to top">↑</button>
+<div id="loader"><div class="loader-inner"></div></div>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script src="/static/scanner.js"></script>
-
 <script>
-let deleteUrl = "";
-
-function previewCoverImage() {
-  const fileInput = document.getElementById('cover_image');
-  const preview = document.getElementById('cover_preview');
-  const file = fileInput.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      preview.src = e.target.result;
-      preview.style.display = "block";
-      setTimeout(() => preview.style.opacity = 1, 50);
-    };
-    reader.readAsDataURL(file);
-  } else {
-    preview.src = "";
-    preview.style.opacity = 0;
-    preview.style.display = "none";
-  }
-}
-
-function filterGames() {
-  const input = document.getElementById('search-bar').value.toLowerCase();
-  const gameItems = document.querySelectorAll('li');
-  gameItems.forEach(item => {
-    const text = item.textContent.toLowerCase();
-    item.style.display = text.includes(input) ? "" : "none";
-  });
-}
-
-function clearSearch() {
-  document.getElementById('search-bar').value = '';
-  filterGames();
-}
-
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-window.onscroll = function() {
-  const btn = document.getElementById('backToTop');
-  btn.style.display = (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) ? "block" : "none";
-}
-
-function showToast(message, isError = false) {
-  const toast = document.getElementById('toast');
-  toast.innerText = message;
-  toast.style.background = isError ? '#f00' : '#0f0';
-  toast.style.borderColor = '#0ff';
-  toast.style.display = 'block';
-  setTimeout(() => toast.style.display = 'none', 4000);
-}
-
 window.addEventListener('load', () => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('success') === '1') {
-    showToast('✅ Game added successfully!');
-  }
-  if (params.get('error')) {
-    showToast('❌ ' + params.get('error'), true);
-  }
+  const loader = document.getElementById('loader');
+  loader.style.opacity = '0';
+  loader.style.transition = 'opacity 1s ease-out';
+  setTimeout(() => loader.style.display = 'none', 1000);
 });
-
-// Neon Modal logic
-function openDeleteModal(url) {
-  deleteUrl = url;
-  document.getElementById('deleteModal').style.display = 'flex';
-}
-
-function closeModal() {
-  document.getElementById('deleteModal').style.display = 'none';
-}
-
-function confirmDelete() {
-  window.location.href = deleteUrl;
-}
 </script>
-
 </body>
 </html>
