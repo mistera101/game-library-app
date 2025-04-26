@@ -61,6 +61,24 @@
       background: #ff0;
     }
 
+    .upload-label {
+      display: inline-block;
+      padding: 0.75rem;
+      width: 100%;
+      background: #111;
+      color: #0ff;
+      border: 2px dashed #0ff;
+      border-radius: 12px;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 0.5rem;
+      cursor: pointer;
+      text-shadow: 0 0 3px #0ff;
+    }
+    .upload-label:hover {
+      background: #222;
+    }
+
     a.camera-link {
       text-align: center;
       background: #111;
@@ -175,7 +193,7 @@
 </head>
 <body>
 
-<!-- Toast -->
+<!-- Toast Popup -->
 <div id="toast" class="toast">✅ Game Added Successfully!</div>
 
 <h1>🎮 Game Library</h1>
@@ -201,7 +219,8 @@
     <option value="Completed">✅ Completed</option>
   </select>
 
-  <input type="file" name="cover_image" accept="image/*">
+  <label for="cover-upload" class="upload-label">📸 Upload Cover Image</label>
+  <input id="cover-upload" type="file" name="cover_image" accept="image/*" style="display: none;">
 
   <button type="button" onclick="startScanner()">📷 Scan Barcode</button>
   <a href="/static/test-camera.html" target="_blank" class="camera-link">👀 Open Camera Preview</a>
