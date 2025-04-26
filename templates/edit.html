@@ -1,24 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Edit Game</title>
+  <meta charset="UTF-8">
+  <title>Edit Game - Game Library</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #0f0f0f, #1a0033);
+      color: #0ff;
+      padding: 2rem;
+      text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+    }
+
+    h1 {
+      text-align: center;
+      color: #f0f;
+      text-shadow: 0 0 5px #f0f, 0 0 10px #f0f;
+    }
+
+    form {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid #0ff;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 0 20px #0ff;
+      animation: pulse 3s infinite ease-in-out;
+    }
+
+    input, select, button {
+      width: 100%;
+      margin: 0.75rem 0;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border-radius: 12px;
+      border: 2px solid #f0f;
+      background: #000;
+      color: #0ff;
+      text-shadow: 0 0 3px #0ff;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      box-shadow: 0 0 10px #f0f;
+    }
+
+    button {
+      background: #0f0;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #ff0;
+    }
+
+    a {
+      display: block;
+      text-align: center;
+      margin-top: 1rem;
+      color: #0ff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 15px #0ff; }
+      50% { box-shadow: 0 0 30px #0ff; }
+      100% { box-shadow: 0 0 15px #0ff; }
+    }
+  </style>
 </head>
 <body>
-    <h1>Edit Game</h1>
-    <form action="/edit/{{ game.id }}" method="post">
-        <input type="text" name="name" value="{{ game.name }}" required>
-        <input type="text" name="barcode" value="{{ game.barcode }}" required>
-        
-        <select name="category" required>
-            <option value="">--Select Category--</option>
-            {% for cat in ["Sports", "Action", "Racing", "Adventure", "Fighting", "Shooter"] %}
-                <option value="{{ cat }}" {% if game.category == cat %}selected{% endif %}>{{ cat }}</option>
-            {% endfor %}
-        </select>
 
-        <button type="submit">Save Changes</button>
-    </form>
+<h1>✏️ Edit Game</h1>
 
-    <a href="/">← Back to Library</a>
+<form action="/edit/{{ game.id }}" method="post">
+  <input type="text" name="name" value="{{ game.name }}" required>
+  <input type="text" name="barcode" value="{{ game.barcode }}" required>
+
+  <select name="category" required>
+    <option value="">--Select Category--</option>
+    <option value="Sports" {% if game.category == "Sports" %}selected{% endif %}>🏅 Sports</option>
+    <option value="Action" {% if game.category == "Action" %}selected{% endif %}>⚔️ Action</option>
+    <option value="Racing" {% if game.category == "Racing" %}selected{% endif %}>🏎️ Racing</option>
+    <option value="Adventure" {% if game.category == "Adventure" %}selected{% endif %}>🗺️ Adventure</option>
+    <option value="Fighting" {% if game.category == "Fighting" %}selected{% endif %}>🥊 Fighting</option>
+    <option value="Shooter" {% if game.category == "Shooter" %}selected{% endif %}>🔫 Shooter</option>
+  </select>
+
+  <select name="status" required>
+    <option value="">--Select Status--</option>
+    <option value="Wishlist" {% if game.status == "Wishlist" %}selected{% endif %}>📚 Wishlist</option>
+    <option value="Played" {% if game.status == "Played" %}selected{% endif %}>🎮 Played</option>
+    <option value="Completed" {% if game.status == "Completed" %}selected{% endif %}>✅ Completed</option>
+  </select>
+
+  <button type="submit">💾 Save Changes</button>
+</form>
+
+<a href="/">🏠 Back to Library</a>
+
 </body>
 </html>
