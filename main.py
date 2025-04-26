@@ -6,10 +6,12 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, declarative_base
 from starlette.status import HTTP_303_SEE_OTHER
 
+# Initialize app
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# Database setup
 Base = declarative_base()
 DATABASE_URL = "sqlite:///./games.db"
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
@@ -37,16 +39,17 @@ def read_form(request: Request):
         categories[game.category].append(game)
     return templates.TemplateResponse("index.html", {"request": request, "categories": categories})
 
-# Add new game
+# Add new game with smart duplicate check
 @app.post("/add")
-def add_game(name: str = Form(...), barcode: str = Form(...), category: str = Form(...)):
+def add_game(request: Request, name: str = Form(...), barcode: str = Form(...), category: str = Form(...)):
     existing = session.query(Game).filter(Game.barcode == barcode).first()
     if existing:
-        return {"message": "You already own this game!"}
+        return RedirectResponse(url=f"/?error=You already own this game!", status_code=HTTP_303_SEE_OTHER)
+    
     game = Game(name=name, barcode=barcode, category=category)
     session.add(game)
     session.commit()
-    return {"message": f"{name} added to your library!"}
+    return RedirectResponse(url="/", status_code=HTTP_303_SEE_OTHER)
 
 # List all games (raw JSON)
 @app.get("/games")

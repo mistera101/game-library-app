@@ -21,7 +21,7 @@
       text-shadow: 0 0 5px #f0f, 0 0 10px #f0f;
     }
 
-    form {
+    form, .search-box {
       background: rgba(255, 255, 255, 0.05);
       border: 2px solid #0ff;
       border-radius: 16px;
@@ -120,6 +120,19 @@
       text-decoration: underline;
     }
 
+    .error-message {
+      background: #ffdddd;
+      color: #900;
+      padding: 1rem;
+      border: 2px solid #900;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      font-weight: bold;
+      box-shadow: 0 0 10px #900;
+      text-shadow: none;
+    }
+
     @keyframes pulse {
       0% { box-shadow: 0 0 15px #0ff; }
       50% { box-shadow: 0 0 30px #0ff; }
@@ -129,6 +142,12 @@
 </head>
 <body>
   <h1>🎮 Game Library</h1>
+
+  {% if request.query_params.get('error') %}
+    <div class="error-message">
+      ⚠️ {{ request.query_params.get('error') }}
+    </div>
+  {% endif %}
 
   <form action="/add" method="post">
     <input name="name" placeholder="🎮 Game Name" required>
@@ -149,6 +168,11 @@
     <button type="submit">➕ Add Game</button>
   </form>
 
+  <!-- 🔍 Search bar -->
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="🔎 Search games by name or barcode..." onkeyup="filterGames()">
+  </div>
+
   <!-- Scanner View -->
   <div id="scanner-container" style="display: none;">
     <div id="reader"></div>
@@ -161,10 +185,10 @@
   {% if categories %}
     {% for category, games in categories.items() %}
       <h3>✨ {{ category }}</h3>
-      <ul>
+      <ul class="game-list">
         {% for game in games %}
           <li>
-            <strong>{{ game.name }}</strong> ({{ game.barcode }})<br>
+            <strong class="game-name">{{ game.name }}</strong> (<span class="game-barcode">{{ game.barcode }}</span>)<br>
             <a href="/edit/{{ game.id }}">✏️ Edit</a>
             <a href="/delete/{{ game.id }}" onclick="return confirm('Delete this game?');">🗑️ Delete</a>
           </li>
@@ -175,8 +199,27 @@
     <p>No games in your library yet.</p>
   {% endif %}
 
-  <!-- ✅ Working CDN for Scanner -->
+  <!-- ✅ Working Scanner Scripts -->
   <script src="https://unpkg.com/html5-qrcode"></script>
   <script src="/static/scanner.js"></script>
+
+  <!-- 🧠 Search Filter Script -->
+  <script>
+    function filterGames() {
+      const input = document.getElementById('searchInput');
+      const filter = input.value.toLowerCase();
+      const gameLists = document.querySelectorAll('.game-list li');
+
+      gameLists.forEach(game => {
+        const name = game.querySelector('.game-name').textContent.toLowerCase();
+        const barcode = game.querySelector('.game-barcode').textContent.toLowerCase();
+        if (name.includes(filter) || barcode.includes(filter)) {
+          game.style.display = "";
+        } else {
+          game.style.display = "none";
+        }
+      });
+    }
+  </script>
 </body>
 </html>
