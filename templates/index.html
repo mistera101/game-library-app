@@ -76,18 +76,22 @@
 
     #scanner-container {
       margin-top: 1rem;
+      display: none;
+      padding: 1rem;
       border: 2px solid #0ff;
       border-radius: 12px;
-      padding: 1rem;
       background: #000;
       box-shadow: 0 0 15px #0ff;
     }
 
     #reader {
-      border-radius: 12px;
       width: 100%;
-      max-width: 100%;
+      max-width: 400px;
+      height: 300px;
+      margin: 0 auto;
       border: 2px solid #f0f;
+      border-radius: 12px;
+      background: #000;
     }
 
     #cover_preview {
@@ -147,19 +151,14 @@
       50% { box-shadow: 0 0 30px #0ff; }
       100% { box-shadow: 0 0 15px #0ff; }
     }
-
-    @keyframes fadeInOut {
-      0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
-      10% { opacity: 1; transform: translateX(-50%) translateY(0); }
-      90% { opacity: 1; transform: translateX(-50%) translateY(0); }
-      100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-    }
   </style>
 </head>
+
 <body>
 
 <h1>🎮 Game Library</h1>
 
+<!-- 🎯 Form to Add Game -->
 <form action="/add" method="post" enctype="multipart/form-data">
   <input name="name" placeholder="🎮 Game Name" required>
   <input id="barcode" name="barcode" placeholder="📸 Barcode" required>
@@ -169,8 +168,8 @@
     <option value="Sports">🏅 Sports</option>
     <option value="Action">⚔️ Action</option>
     <option value="Racing">🏎️ Racing</option>
-    <option value="Adventure">🗽️ Adventure</option>
-    <option value="Fighting">🏈 Fighting</option>
+    <option value="Adventure">🗺️ Adventure</option>
+    <option value="Fighting">🥊 Fighting</option>
     <option value="Shooter">🔫 Shooter</option>
   </select>
 
@@ -188,11 +187,19 @@
   <button type="submit">➕ Add Game</button>
 </form>
 
+<!-- 🔎 Search Box -->
 <div class="search-box">
   <input type="text" id="search-bar" placeholder="🔍 Search games by name or barcode..." onkeyup="filterGames()">
   <button type="button" onclick="clearSearch()">❌ Clear Search</button>
 </div>
 
+<!-- 🎯 Scanner Container -->
+<div id="scanner-container">
+  <div id="reader"></div>
+  <p id="scan-status">📷 Waiting for camera access...</p>
+</div>
+
+<!-- 📋 Game List -->
 <hr>
 <h2>📋 Your Collection</h2>
 
@@ -205,7 +212,7 @@
           <strong>{{ game.name }}</strong> 
           <span class="badge">{{ game.category }}</span><br>
           📦 {{ game.barcode }}<br>
-          📅 Added: {{ game.date_added if game.date_added else 'N/A' }}<br>
+          📅 Added: {{ game.date_added.strftime('%Y-%m-%d') if game.date_added else 'N/A' }}<br>
           🎯 Status: {{ game.status }}<br>
           {% if game.cover_image %}
             <img src="/{{ game.cover_image }}" alt="Cover Image" style="max-width: 150px; margin-top: 0.5rem; border-radius: 8px;">
@@ -221,25 +228,7 @@
   <p>No games in your library yet.</p>
 {% endif %}
 
-<!-- Toast -->
-<div id="toast" style="
-  display: none;
-  position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 255, 255, 0.2);
-  color: #0ff;
-  padding: 1rem 2rem;
-  border: 2px solid #0ff;
-  border-radius: 12px;
-  font-size: 1.2rem;
-  box-shadow: 0 0 15px #0ff, 0 0 30px #0ff;
-  z-index: 9999;
-  animation: fadeInOut 3s ease forwards;
-  text-align: center;">
-</div>
-
+<!-- 📚 Scripts -->
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script src="/static/scanner.js"></script>
 
@@ -278,25 +267,6 @@ function clearSearch() {
   document.getElementById('search-bar').value = '';
   filterGames();
 }
-
-function showToast(message) {
-  const toast = document.getElementById('toast');
-  toast.textContent = message;
-  toast.style.display = 'block';
-  setTimeout(() => {
-    toast.style.display = 'none';
-  }, 3000);
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.has('success')) {
-    showToast("✅ Game added successfully!");
-  }
-  if (params.has('duplicate')) {
-    showToast("⚠️ You already own this game!");
-  }
-});
 </script>
 
 </body>
