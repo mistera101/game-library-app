@@ -31,6 +31,18 @@
       animation: pulse 3s infinite ease-in-out;
     }
 
+    .edit-form {
+      animation: fadeSlideIn 1s ease-out forwards;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid #0ff;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 0 20px #f0f;
+      transform: translateY(30px);
+      opacity: 0;
+    }
+
     input, select, button, a.camera-link {
       display: block;
       width: 100%;
@@ -42,11 +54,6 @@
       background: #000;
       color: #0ff;
       text-shadow: 0 0 3px #0ff;
-    }
-
-    input:focus, select:focus {
-      outline: none;
-      box-shadow: 0 0 10px #f0f;
     }
 
     button {
@@ -62,16 +69,12 @@
     }
 
     a.camera-link {
-      text-align: center;
       background: #111;
-      color: #0ff;
       border: 2px dashed #0ff;
       text-decoration: none;
+      text-align: center;
       font-weight: bold;
-    }
-
-    a.camera-link:hover {
-      background: #222;
+      color: #0ff;
     }
 
     #scanner-container {
@@ -91,7 +94,6 @@
       margin: 0 auto;
       border: 2px solid #f0f;
       border-radius: 12px;
-      background: #000;
     }
 
     #cover_preview {
@@ -100,15 +102,14 @@
       border: 2px solid #0ff;
       border-radius: 12px;
       display: none;
-      box-shadow: 0 0 10px #0ff;
       opacity: 0;
       transition: opacity 1s ease-in-out;
     }
 
     #scan-status {
-      color: #0ff;
       text-align: center;
-      margin-top: 0.75rem;
+      color: #0ff;
+      margin-top: 1rem;
     }
 
     ul {
@@ -127,8 +128,8 @@
 
     li a {
       color: #f0f;
-      margin-right: 0.5rem;
       text-decoration: none;
+      margin-right: 0.5rem;
     }
 
     li a:hover {
@@ -141,60 +142,34 @@
       padding: 0.25rem 0.6rem;
       font-size: 0.8rem;
       border-radius: 999px;
-      font-weight: bold;
-      text-transform: uppercase;
       background: #0ff;
       color: #000;
-      box-shadow: 0 0 8px #0ff;
+      font-weight: bold;
     }
 
     #toast {
       position: fixed;
       top: 20px;
       right: 20px;
-      padding: 1rem 1.5rem;
       background: #0f0;
       color: #000;
-      font-weight: bold;
       border: 2px solid #0ff;
       border-radius: 12px;
+      padding: 1rem 1.5rem;
       box-shadow: 0 0 15px #0ff;
       display: none;
-      z-index: 9999;
       animation: fadeInOut 4s forwards;
-    }
-
-    #backToTop {
-      display: none;
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      z-index: 999;
-      background-color: #0ff;
-      color: #000;
-      border: 2px solid #f0f;
-      border-radius: 50%;
-      padding: 1rem;
-      font-size: 1.5rem;
-      cursor: pointer;
-      box-shadow: 0 0 20px #0ff;
-      transition: background 0.3s;
-    }
-
-    #backToTop:hover {
-      background-color: #f0f;
-      color: #000;
+      z-index: 9999;
     }
 
     #deleteModal {
       position: fixed;
       top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.85);
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
       display: none;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       z-index: 10000;
     }
 
@@ -204,20 +179,48 @@
       border: 2px solid #0ff;
       border-radius: 12px;
       text-align: center;
-      color: #0ff;
       box-shadow: 0 0 20px #0ff;
-      animation: pulse 2s infinite;
     }
 
-    #deleteModal button {
-      margin: 0.5rem;
-      padding: 0.7rem 1.2rem;
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0f0f0f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
     }
 
-    @keyframes pulse {
-      0% { box-shadow: 0 0 15px #0ff; }
-      50% { box-shadow: 0 0 30px #0ff; }
-      100% { box-shadow: 0 0 15px #0ff; }
+    .loader-inner {
+      width: 80px;
+      height: 80px;
+      border: 6px solid #0ff;
+      border-top: 6px solid #f0f;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    #backToTop {
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #0ff;
+      color: #000;
+      border: 2px solid #f0f;
+      border-radius: 50%;
+      padding: 1rem;
+      font-size: 1.5rem;
+      box-shadow: 0 0 20px #0ff;
+      cursor: pointer;
+    }
+
+    #backToTop:hover {
+      background: #f0f;
     }
 
     @keyframes fadeInOut {
@@ -226,13 +229,27 @@
       90% { opacity: 1; }
       100% { opacity: 0; transform: translateY(-20px); }
     }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 15px #0ff; }
+      50% { box-shadow: 0 0 30px #0ff; }
+      100% { box-shadow: 0 0 15px #0ff; }
+    }
   </style>
 </head>
 
 <body>
 
+<div id="loader"><div class="loader-inner"></div></div>
+
 <h1>🎮 Game Library</h1>
 
+<!-- 🎯 Add Game Form -->
 <form action="/add" method="post" enctype="multipart/form-data">
   <input name="name" placeholder="🎮 Game Name" required>
   <input id="barcode" name="barcode" placeholder="📸 Barcode" required>
@@ -257,17 +274,20 @@
   <button type="submit">➕ Add Game</button>
 </form>
 
+<!-- 🔎 Search -->
 <div class="search-box">
   <input type="text" id="search-bar" placeholder="🔍 Search games by name or barcode..." onkeyup="filterGames()">
-  <button type="button" onclick="clearSearch()">❌ Clear Search</button>
+  <button type="button" onclick="clearSearch()">❌ Clear</button>
 </div>
 
+<!-- 📷 Scanner -->
 <div id="scanner-container">
   <div id="reader"></div>
   <p id="scan-status">📷 Waiting for camera access...</p>
 </div>
 
 <hr>
+
 <h2>📋 Your Collection</h2>
 
 {% if categories %}
@@ -276,13 +296,12 @@
     <ul>
       {% for game in games %}
         <li>
-          <strong>{{ game.name }}</strong> 
-          <span class="badge">{{ game.category }}</span><br>
+          <strong>{{ game.name }}</strong> <span class="badge">{{ game.category }}</span><br>
           📦 {{ game.barcode }}<br>
           📅 Added: {{ game.date_added.strftime('%Y-%m-%d') if game.date_added else 'N/A' }}<br>
           🎯 Status: {{ game.status }}<br>
           {% if game.cover_image %}
-            <img src="/{{ game.cover_image }}" alt="Cover Image" style="max-width: 150px; margin-top: 0.5rem; border-radius: 8px;">
+            <img src="/{{ game.cover_image }}" alt="Cover" style="max-width:150px;margin-top:0.5rem;border-radius:8px;">
           {% endif %}
           <br>
           <a href="/edit/{{ game.id }}">✏️ Edit</a> |
@@ -292,12 +311,12 @@
     </ul>
   {% endfor %}
 {% else %}
-  <p>No games in your library yet.</p>
+  <p>No games added yet.</p>
 {% endif %}
 
 <div id="toast"></div>
 
-<!-- 🔥 Modal -->
+<!-- 🔥 Delete Modal -->
 <div id="deleteModal">
   <div class="modal-content">
     <h3>🛑 Confirm Deletion</h3>
@@ -307,8 +326,8 @@
   </div>
 </div>
 
-<!-- 🔥 Back to Top Button -->
-<button onclick="scrollToTop()" id="backToTop" title="Go to top">↑</button>
+<!-- 🔥 Back to Top -->
+<button id="backToTop" onclick="scrollToTop()">↑</button>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script src="/static/scanner.js"></script>
@@ -335,49 +354,11 @@ function previewCoverImage() {
   }
 }
 
-function filterGames() {
-  const input = document.getElementById('search-bar').value.toLowerCase();
-  const gameItems = document.querySelectorAll('li');
-  gameItems.forEach(item => {
-    const text = item.textContent.toLowerCase();
-    item.style.display = text.includes(input) ? "" : "none";
-  });
+function startScanner() {
+  document.getElementById('scanner-container').style.display = 'block';
+  // scanner.js handles the rest
 }
 
-function clearSearch() {
-  document.getElementById('search-bar').value = '';
-  filterGames();
-}
-
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-window.onscroll = function() {
-  const btn = document.getElementById('backToTop');
-  btn.style.display = (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) ? "block" : "none";
-}
-
-function showToast(message, isError = false) {
-  const toast = document.getElementById('toast');
-  toast.innerText = message;
-  toast.style.background = isError ? '#f00' : '#0f0';
-  toast.style.borderColor = '#0ff';
-  toast.style.display = 'block';
-  setTimeout(() => toast.style.display = 'none', 4000);
-}
-
-window.addEventListener('load', () => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('success') === '1') {
-    showToast('✅ Game added successfully!');
-  }
-  if (params.get('error')) {
-    showToast('❌ ' + params.get('error'), true);
-  }
-});
-
-// Neon Modal logic
 function openDeleteModal(url) {
   deleteUrl = url;
   document.getElementById('deleteModal').style.display = 'flex';
@@ -390,6 +371,59 @@ function closeModal() {
 function confirmDelete() {
   window.location.href = deleteUrl;
 }
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+window.onscroll = function() {
+  const btn = document.getElementById('backToTop');
+  if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+    btn.style.display = "block";
+  } else {
+    btn.style.display = "none";
+  }
+}
+
+function filterGames() {
+  const input = document.getElementById('search-bar').value.toLowerCase();
+  const games = document.querySelectorAll('li');
+  games.forEach(game => {
+    const text = game.textContent.toLowerCase();
+    game.style.display = text.includes(input) ? "" : "none";
+  });
+}
+
+function clearSearch() {
+  document.getElementById('search-bar').value = '';
+  filterGames();
+}
+
+function showToast(message, isError = false) {
+  const toast = document.getElementById('toast');
+  toast.innerText = message;
+  toast.style.background = isError ? '#f00' : '#0f0';
+  toast.style.borderColor = '#0ff';
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 4000);
+}
+
+window.addEventListener('load', () => {
+  const loader = document.getElementById('loader');
+  loader.style.opacity = '0';
+  loader.style.transition = 'opacity 1s ease-out';
+  setTimeout(() => loader.style.display = 'none', 1000);
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('success') === '1') {
+    showToast('✅ Game added successfully!');
+  }
+  if (params.get('error')) {
+    showToast('❌ ' + params.get('error'), true);
+  }
+});
 </script>
 
 </body>
