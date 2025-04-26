@@ -21,13 +21,14 @@
       text-shadow: 0 0 5px #f0f, 0 0 10px #f0f;
     }
 
-    form {
+    form, .search-box {
       background: rgba(255, 255, 255, 0.05);
       border: 2px solid #0ff;
       border-radius: 16px;
       padding: 1.5rem;
       margin-bottom: 2rem;
       box-shadow: 0 0 20px #0ff;
+      animation: pulse 3s infinite ease-in-out;
     }
 
     input, select, button, a.camera-link {
@@ -60,19 +61,43 @@
       background: #ff0;
     }
 
-    .badge {
-      display: inline-block;
-      padding: 0.2rem 0.5rem;
-      background: #0ff;
-      color: #000;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      margin-left: 0.5rem;
-      text-shadow: none;
+    a.camera-link {
+      text-align: center;
+      background: #111;
+      color: #0ff;
+      border: 2px dashed #0ff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a.camera-link:hover {
+      background: #222;
+    }
+
+    #scanner-container {
+      margin-top: 1rem;
+      border: 2px solid #0ff;
+      border-radius: 12px;
+      padding: 1rem;
+      background: #000;
+      box-shadow: 0 0 15px #0ff;
+    }
+
+    #reader {
+      border-radius: 12px;
+      width: 100%;
+      max-width: 100%;
+      border: 2px solid #f0f;
+    }
+
+    #scan-status {
+      color: #0ff;
+      text-align: center;
+      margin-top: 0.75rem;
     }
 
     ul {
-      list-style: none;
+      list-style-type: none;
       padding: 0;
     }
 
@@ -83,6 +108,54 @@
       padding: 1rem;
       border-radius: 12px;
       box-shadow: 0 0 10px #0ff;
+    }
+
+    li a {
+      color: #f0f;
+      margin-right: 0.5rem;
+      text-decoration: none;
+    }
+
+    li a:hover {
+      text-decoration: underline;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-left: 0.5rem;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.8rem;
+      border-radius: 999px;
+      font-weight: bold;
+      text-transform: uppercase;
+      background: #0ff;
+      color: #000;
+      box-shadow: 0 0 8px #0ff;
+    }
+
+    .toast {
+      visibility: hidden;
+      min-width: 250px;
+      background: #0f0;
+      color: #000;
+      text-align: center;
+      border-radius: 12px;
+      padding: 1rem;
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      font-weight: bold;
+      box-shadow: 0 0 20px #0f0;
+      opacity: 0;
+      transition: opacity 0.5s, top 0.5s;
+    }
+
+    .toast.show {
+      visibility: visible;
+      opacity: 1;
+      top: 60px;
     }
 
     .pagination {
@@ -102,139 +175,106 @@
       color: #ff0;
     }
 
-    #scanner-container {
-      margin-top: 1rem;
-      padding: 1rem;
-      background: #000;
-      border: 2px solid #0ff;
-      border-radius: 12px;
-    }
-
-    #reader {
-      width: 100%;
-      border-radius: 12px;
-      border: 2px solid #f0f;
-    }
-
-    #scan-status {
-      text-align: center;
-      margin-top: 1rem;
-      color: #0ff;
-    }
-
-    .toast {
-      visibility: hidden;
-      min-width: 250px;
-      margin-left: -125px;
-      background-color: #0ff;
-      color: #000;
-      text-align: center;
-      border-radius: 2px;
-      padding: 1rem;
-      position: fixed;
-      z-index: 1;
-      left: 50%;
-      bottom: 30px;
-      font-size: 1rem;
-    }
-
-    .toast.show {
-      visibility: visible;
-      animation: fadein 0.5s, fadeout 0.5s 2.5s;
-    }
-
-    @keyframes fadein {
-      from {bottom: 0; opacity: 0;} 
-      to {bottom: 30px; opacity: 1;}
-    }
-
-    @keyframes fadeout {
-      from {bottom: 30px; opacity: 1;} 
-      to {bottom: 0; opacity: 0;}
+    @keyframes pulse {
+      0% { box-shadow: 0 0 15px #0ff; }
+      50% { box-shadow: 0 0 30px #0ff; }
+      100% { box-shadow: 0 0 15px #0ff; }
     }
   </style>
 </head>
 <body>
-  <h1>🎮 Game Library</h1>
 
-  <form action="/add" method="post">
-    <input name="name" placeholder="🎮 Game Name" required>
-    <input id="barcode" name="barcode" placeholder="📸 Barcode" required>
-    <select name="category" required>
-      <option value="">--Select Category--</option>
-      <option value="Sports">Sports</option>
-      <option value="Action">Action</option>
-      <option value="Racing">Racing</option>
-      <option value="Adventure">Adventure</option>
-      <option value="Fighting">Fighting</option>
-      <option value="Shooter">Shooter</option>
-    </select>
-    <select name="status" required>
-      <option value="Wishlist">📚 Wishlist</option>
-      <option value="Played">🎮 Played</option>
-      <option value="Completed">✅ Completed</option>
-    </select>
-    <button type="button" onclick="startScanner()">📷 Scan Barcode</button>
-    <a href="/static/test-camera.html" target="_blank" class="camera-link">👀 Open Camera Preview</a>
-    <button type="submit">➕ Add Game</button>
-  </form>
+<!-- Toast Popup -->
+<div id="toast" class="toast">✅ Game Added Successfully!</div>
 
-  <!-- Toast Notification -->
-  <div id="toast" class="toast">✅ Game Added Successfully!</div>
+<h1>🎮 Game Library</h1>
 
-  <!-- Scanner View -->
-  <div id="scanner-container" style="display: none;">
-    <div id="reader"></div>
-    <p id="scan-status">📷 Waiting for camera access...</p>
+<form action="/add" method="post">
+  <input name="name" placeholder="🎮 Game Name" required>
+  <input id="barcode" name="barcode" placeholder="📸 Barcode" required>
+
+  <select name="category" required>
+    <option value="">--Select Category--</option>
+    <option value="Sports">🏅 Sports</option>
+    <option value="Action">⚔️ Action</option>
+    <option value="Racing">🏎️ Racing</option>
+    <option value="Adventure">🗺️ Adventure</option>
+    <option value="Fighting">🥊 Fighting</option>
+    <option value="Shooter">🔫 Shooter</option>
+  </select>
+
+  <select name="status" required>
+    <option value="Wishlist">📚 Wishlist</option>
+    <option value="Played">🎮 Played</option>
+    <option value="Completed">✅ Completed</option>
+  </select>
+
+  <button type="button" onclick="startScanner()">📷 Scan Barcode</button>
+  <a href="/static/test-camera.html" target="_blank" class="camera-link">👀 Open Camera Preview</a>
+  <button type="submit">➕ Add Game</button>
+</form>
+
+<!-- Scanner Container -->
+<div id="scanner-container" style="display: none;">
+  <div id="reader"></div>
+  <p id="scan-status">📷 Waiting for camera access...</p>
+</div>
+
+<hr>
+<h2>📋 Your Collection</h2>
+
+{% if categories %}
+  {% for category, games in categories.items() %}
+    <h3>✨ {{ category }}</h3>
+    <ul>
+      {% for game in games %}
+        <li>
+          <strong>{{ game.name }}</strong>
+          <span class="badge">{{ game.status }}</span><br>
+          📦 {{ game.barcode }}<br>
+          🕒 Added on: {{ game.date_added.strftime('%d %B %Y') }}<br>
+          <a href="/edit/{{ game.id }}">✏️ Edit</a>
+          <a href="/delete/{{ game.id }}" onclick="return confirm('Delete this game?');">🗑️ Delete</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endfor %}
+
+  <!-- Pagination -->
+  <div class="pagination">
+    {% if current_page > 1 %}
+      <a href="/?page={{ current_page - 1 }}">⬅️ Prev</a>
+    {% endif %}
+    Page {{ current_page }} of {{ total_pages }}
+    {% if current_page < total_pages %}
+      <a href="/?page={{ current_page + 1 }}">Next ➡️</a>
+    {% endif %}
   </div>
 
-  <hr>
-  <h2>📋 Your Collection</h2>
+{% else %}
+  <p>No games in your library yet.</p>
+{% endif %}
 
-  {% if categories %}
-    {% for category, games in categories.items() %}
-      <h3>✨ {{ category }}</h3>
-      <ul>
-        {% for game in games %}
-          <li>
-            <strong>{{ game.name }}</strong>
-            <span class="badge">{{ game.status }}</span>
-            <br>
-            <small>🕒 Added on: {{ game.date_added.strftime('%d %B %Y') }}</small>
-            <br>
-            <a href="/edit/{{ game.id }}">✏️ Edit</a>
-            <a href="/delete/{{ game.id }}" onclick="return confirm('Delete this game?');">🗑️ Delete</a>
-          </li>
-        {% endfor %}
-      </ul>
-    {% endfor %}
+<!-- Scripts -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="/static/scanner.js"></script>
 
-    <div class="pagination">
-      {% if current_page > 1 %}
-        <a href="/?page={{ current_page - 1 }}">⬅️ Prev</a>
-      {% endif %}
-      Page {{ current_page }} of {{ total_pages }}
-      {% if current_page < total_pages %}
-        <a href="/?page={{ current_page + 1 }}">Next ➡️</a>
-      {% endif %}
-    </div>
+<script>
+window.onload = function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('success')) {
+    showToast();
+  }
+};
 
-  {% else %}
-    <p>No games in your library yet.</p>
-  {% endif %}
+function showToast() {
+  const toast = document.getElementById("toast");
+  toast.classList.add("show");
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
+}
+</script>
 
-  <!-- Load Scanner Scripts -->
-  <script src="https://unpkg.com/html5-qrcode"></script>
-  <script src="/static/scanner.js"></script>
-  <script>
-    window.onload = function() {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('success')) {
-        const toast = document.getElementById("toast");
-        toast.classList.add("show");
-        setTimeout(() => { toast.classList.remove("show"); }, 3000);
-      }
-    };
-  </script>
 </body>
 </html>
