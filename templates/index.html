@@ -143,6 +143,7 @@
 <body>
   <h1>🎮 Game Library</h1>
 
+  <!-- Error message if duplicate barcode -->
   {% if request.query_params.get('error') %}
     <div class="error-message">
       ⚠️ {{ request.query_params.get('error') }}
@@ -155,12 +156,12 @@
 
     <select name="category" required>
       <option value="">--Select Category--</option>
-      <option value="Sports">Sports</option>
-      <option value="Action">Action</option>
-      <option value="Racing">Racing</option>
-      <option value="Adventure">Adventure</option>
-      <option value="Fighting">Fighting</option>
-      <option value="Shooter">Shooter</option>
+      <option value="Sports">🏅 Sports</option>
+      <option value="Action">⚔️ Action</option>
+      <option value="Racing">🏎️ Racing</option>
+      <option value="Adventure">🗺️ Adventure</option>
+      <option value="Fighting">🥊 Fighting</option>
+      <option value="Shooter">🔫 Shooter</option>
     </select>
 
     <button type="button" onclick="startScanner()">📷 Scan Barcode</button>
@@ -168,12 +169,22 @@
     <button type="submit">➕ Add Game</button>
   </form>
 
-  <!-- 🔍 Search bar -->
+  <!-- 🔍 Search and Category Filter -->
   <div class="search-box">
     <input type="text" id="searchInput" placeholder="🔎 Search games by name or barcode..." onkeyup="filterGames()">
+    
+    <select id="categoryFilter" onchange="filterGames()" style="margin-top: 1rem;">
+      <option value="">✨ Show All Categories</option>
+      <option value="Sports">🏅 Sports</option>
+      <option value="Action">⚔️ Action</option>
+      <option value="Racing">🏎️ Racing</option>
+      <option value="Adventure">🗺️ Adventure</option>
+      <option value="Fighting">🥊 Fighting</option>
+      <option value="Shooter">🔫 Shooter</option>
+    </select>
   </div>
 
-  <!-- Scanner View -->
+  <!-- Scanner container -->
   <div id="scanner-container" style="display: none;">
     <div id="reader"></div>
     <p id="scan-status">📷 Waiting for camera access...</p>
@@ -199,21 +210,26 @@
     <p>No games in your library yet.</p>
   {% endif %}
 
-  <!-- ✅ Working Scanner Scripts -->
+  <!-- Scripts -->
   <script src="https://unpkg.com/html5-qrcode"></script>
   <script src="/static/scanner.js"></script>
 
-  <!-- 🧠 Search Filter Script -->
+  <!-- Search & Category filter script -->
   <script>
     function filterGames() {
-      const input = document.getElementById('searchInput');
-      const filter = input.value.toLowerCase();
-      const gameLists = document.querySelectorAll('.game-list li');
+      const searchInput = document.getElementById('searchInput').value.toLowerCase();
+      const selectedCategory = document.getElementById('categoryFilter').value.toLowerCase();
+      const gameItems = document.querySelectorAll('.game-list li');
 
-      gameLists.forEach(game => {
+      gameItems.forEach(game => {
         const name = game.querySelector('.game-name').textContent.toLowerCase();
         const barcode = game.querySelector('.game-barcode').textContent.toLowerCase();
-        if (name.includes(filter) || barcode.includes(filter)) {
+        const category = game.closest('ul').previousElementSibling.textContent.toLowerCase();
+
+        const matchesSearch = name.includes(searchInput) || barcode.includes(searchInput);
+        const matchesCategory = selectedCategory === "" || category.includes(selectedCategory);
+
+        if (matchesSearch && matchesCategory) {
           game.style.display = "";
         } else {
           game.style.display = "none";
