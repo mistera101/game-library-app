@@ -9,20 +9,23 @@ from starlette.status import HTTP_303_SEE_OTHER
 from datetime import datetime
 import os
 
+# 🔥 App and Template Setup
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# 🔥 Database Setup
 Base = declarative_base()
 DATABASE_URL = "sqlite:///./games.db"
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(bind=engine)
 session = SessionLocal()
 
-# Create uploads folder if it doesn't exist
+# 🔥 Uploads Folder
 UPLOAD_FOLDER = "static/uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# 🔥 Game Model
 class Game(Base):
     __tablename__ = "games"
     id = Column(Integer, primary_key=True, index=True)
@@ -35,7 +38,9 @@ class Game(Base):
 
 Base.metadata.create_all(bind=engine)
 
-# Home page - with pagination
+# 🔥 Routes
+
+# 📋 Home Page with Pagination
 @app.get("/", response_class=HTMLResponse)
 def read_form(request: Request, page: int = 1):
     page_size = 10
@@ -46,14 +51,10 @@ def read_form(request: Request, page: int = 1):
 
     games = session.query(Game).offset(offset).limit(page_size).all()
 
-    # Group games by category
     categories = {}
     for game in games:
-        if game.category not in categories:
-            categories[game.category] = []
-        categories[game.category].append(game)
+        categories.setdefault(game.category, []).append(game)
 
-    # Check for success or error messages
     success = request.query_params.get("success")
     error = request.query_params.get("error")
 
@@ -66,7 +67,7 @@ def read_form(request: Request, page: int = 1):
         "total_pages": total_pages
     })
 
-# Add new game
+# ➕ Add New Game
 @app.post("/add")
 async def add_game(
     name: str = Form(...),
@@ -99,12 +100,12 @@ async def add_game(
 
     return RedirectResponse("/?success=1", status_code=HTTP_303_SEE_OTHER)
 
-# View all games (API route)
+# 📚 View All Games (API)
 @app.get("/games")
 def get_games():
     return session.query(Game).all()
 
-# Delete a game
+# 🗑️ Delete Game
 @app.get("/delete/{game_id}")
 def delete_game(game_id: int):
     game = session.query(Game).filter(Game.id == game_id).first()
@@ -113,12 +114,13 @@ def delete_game(game_id: int):
         session.commit()
     return RedirectResponse("/", status_code=HTTP_303_SEE_OTHER)
 
-# Edit a game
+# ✏️ Edit Game Form
 @app.get("/edit/{game_id}", response_class=HTMLResponse)
 def edit_game_form(request: Request, game_id: int):
     game = session.query(Game).filter(Game.id == game_id).first()
     return templates.TemplateResponse("edit.html", {"request": request, "game": game})
 
+# ✏️ Update Game
 @app.post("/edit/{game_id}")
 def update_game(
     game_id: int,
@@ -136,7 +138,7 @@ def update_game(
         session.commit()
     return RedirectResponse("/", status_code=HTTP_303_SEE_OTHER)
 
-# Custom 404 page
+# 🚫 Custom 404 Page
 @app.exception_handler(404)
 def not_found(request: Request, exc):
     return templates.TemplateResponse("404.html", {"request": request}, status_code=404)

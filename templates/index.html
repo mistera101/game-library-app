@@ -252,6 +252,19 @@
   <p>No games in your library yet.</p>
 {% endif %}
 
+<!-- 🔥 Pagination Buttons -->
+<div style="text-align: center; margin-top: 2rem;">
+  {% if current_page > 1 %}
+    <a href="/?page={{ current_page - 1 }}" style="color: #0ff; margin-right: 1rem;">⬅️ Prev</a>
+  {% endif %}
+  
+  <span style="color: #fff;">Page {{ current_page }} of {{ total_pages }}</span>
+  
+  {% if current_page < total_pages %}
+    <a href="/?page={{ current_page + 1 }}" style="color: #0ff; margin-left: 1rem;">Next ➡️</a>
+  {% endif %}
+</div>
+
 <!-- 📚 Scripts -->
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script src="/static/scanner.js"></script>
