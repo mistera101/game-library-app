@@ -146,10 +146,34 @@
       box-shadow: 0 0 8px #0ff;
     }
 
+    /* 🔥 Neon Toasts */
+    #toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      background: #0f0;
+      color: #000;
+      font-weight: bold;
+      border: 2px solid #0ff;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #0ff;
+      display: none;
+      z-index: 9999;
+      animation: fadeInOut 4s forwards;
+    }
+
     @keyframes pulse {
       0% { box-shadow: 0 0 15px #0ff; }
       50% { box-shadow: 0 0 30px #0ff; }
       100% { box-shadow: 0 0 15px #0ff; }
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(-20px); }
+      10% { opacity: 1; transform: translateY(0); }
+      90% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-20px); }
     }
   </style>
 </head>
@@ -232,22 +256,25 @@
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script src="/static/scanner.js"></script>
 
+<!-- ✅ Neon Toast container -->
+<div id="toast"></div>
+
 <script>
 function previewCoverImage() {
-    const fileInput = document.getElementById('cover_image');
-    const preview = document.getElementById('cover_preview');
-    const file = fileInput.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = "block";
-        };
-        reader.readAsDataURL(file);
-    } else {
-        preview.src = "";
-        preview.style.display = "none";
-    }
+  const fileInput = document.getElementById('cover_image');
+  const preview = document.getElementById('cover_preview');
+  const file = fileInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      preview.src = e.target.result;
+      preview.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  } else {
+    preview.src = "";
+    preview.style.display = "none";
+  }
 }
 
 function filterGames() {
@@ -268,15 +295,27 @@ function clearSearch() {
   filterGames();
 }
 
-// ✅ Handle success or error popup
+// 🍭 Show Toast
+function showToast(message, isError = false) {
+  const toast = document.getElementById('toast');
+  toast.innerText = message;
+  toast.style.background = isError ? '#f00' : '#0f0';
+  toast.style.borderColor = '#0ff';
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 4000);
+}
+
+// 🎯 Check URL params and show neon toasts
 window.addEventListener('load', () => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('success') === '1') {
-        alert('✅ Game added successfully!');
-    }
-    if (params.get('error')) {
-        alert('❌ ' + params.get('error'));
-    }
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('success') === '1') {
+    showToast('✅ Game added successfully!');
+  }
+  if (params.get('error')) {
+    showToast('❌ ' + params.get('error'), true);
+  }
 });
 </script>
 
