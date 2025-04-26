@@ -188,7 +188,6 @@
   <button type="submit">➕ Add Game</button>
 </form>
 
-<!-- 🔍 Search box -->
 <div class="search-box">
   <input type="text" id="search-bar" placeholder="🔍 Search games by name or barcode..." onkeyup="filterGames()">
   <button type="button" onclick="clearSearch()">❌ Clear Search</button>
@@ -206,7 +205,7 @@
           <strong>{{ game.name }}</strong> 
           <span class="badge">{{ game.category }}</span><br>
           📦 {{ game.barcode }}<br>
-          📅 Added: {{ game.date_added.strftime('%Y-%m-%d') if game.date_added else 'N/A' }}<br>
+          📅 Added: {{ game.date_added if game.date_added else 'N/A' }}<br>
           🎯 Status: {{ game.status }}<br>
           {% if game.cover_image %}
             <img src="/{{ game.cover_image }}" alt="Cover Image" style="max-width: 150px; margin-top: 0.5rem; border-radius: 8px;">
@@ -222,7 +221,7 @@
   <p>No games in your library yet.</p>
 {% endif %}
 
-<!-- 🚀 Toast Notification -->
+<!-- Toast -->
 <div id="toast" style="
   display: none;
   position: fixed;
@@ -235,7 +234,6 @@
   border: 2px solid #0ff;
   border-radius: 12px;
   font-size: 1.2rem;
-  font-family: 'Orbitron', sans-serif;
   box-shadow: 0 0 15px #0ff, 0 0 30px #0ff;
   z-index: 9999;
   animation: fadeInOut 3s ease forwards;
@@ -289,6 +287,16 @@ function showToast(message) {
     toast.style.display = 'none';
   }, 3000);
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('success')) {
+    showToast("✅ Game added successfully!");
+  }
+  if (params.has('duplicate')) {
+    showToast("⚠️ You already own this game!");
+  }
+});
 </script>
 
 </body>

@@ -35,6 +35,7 @@ class Game(Base):
 
 Base.metadata.create_all(bind=engine)
 
+# Home page - with pagination
 @app.get("/", response_class=HTMLResponse)
 def read_form(request: Request, page: int = 1):
     page_size = 10
@@ -44,12 +45,15 @@ def read_form(request: Request, page: int = 1):
     total_pages = (total_games + page_size - 1) // page_size
 
     games = session.query(Game).offset(offset).limit(page_size).all()
+
+    # Group games by category
     categories = {}
     for game in games:
         if game.category not in categories:
             categories[game.category] = []
         categories[game.category].append(game)
 
+    # Check for success or error messages
     success = request.query_params.get("success")
     error = request.query_params.get("error")
 
@@ -62,6 +66,7 @@ def read_form(request: Request, page: int = 1):
         "total_pages": total_pages
     })
 
+# Add new game
 @app.post("/add")
 async def add_game(
     name: str = Form(...),
@@ -75,13 +80,13 @@ async def add_game(
         return RedirectResponse("/?error=You already own this game!", status_code=HTTP_303_SEE_OTHER)
 
     cover_image_path = None
-    if cover_image and cover_image.filename:  # 🔥 Important: Safe check!
+    if cover_image and cover_image.filename:
         file_location = f"{UPLOAD_FOLDER}/{cover_image.filename}"
         with open(file_location, "wb+") as file_object:
             file_object.write(await cover_image.read())
         cover_image_path = file_location
 
-    game = Game(
+    new_game = Game(
         name=name,
         barcode=barcode,
         category=category,
@@ -89,15 +94,17 @@ async def add_game(
         cover_image=cover_image_path,
         date_added=datetime.now()
     )
-    session.add(game)
+    session.add(new_game)
     session.commit()
 
     return RedirectResponse("/?success=1", status_code=HTTP_303_SEE_OTHER)
 
+# View all games (API route)
 @app.get("/games")
 def get_games():
     return session.query(Game).all()
 
+# Delete a game
 @app.get("/delete/{game_id}")
 def delete_game(game_id: int):
     game = session.query(Game).filter(Game.id == game_id).first()
@@ -106,6 +113,7 @@ def delete_game(game_id: int):
         session.commit()
     return RedirectResponse("/", status_code=HTTP_303_SEE_OTHER)
 
+# Edit a game
 @app.get("/edit/{game_id}", response_class=HTMLResponse)
 def edit_game_form(request: Request, game_id: int):
     game = session.query(Game).filter(Game.id == game_id).first()
@@ -128,6 +136,7 @@ def update_game(
         session.commit()
     return RedirectResponse("/", status_code=HTTP_303_SEE_OTHER)
 
+# Custom 404 page
 @app.exception_handler(404)
 def not_found(request: Request, exc):
     return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
