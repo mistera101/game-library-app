@@ -153,7 +153,6 @@
 
 <h1>🎮 Game Library</h1>
 
-<!-- 📋 Game Form -->
 <form action="/add" method="post" enctype="multipart/form-data">
   <input name="name" placeholder="🎮 Game Name" required>
   <input id="barcode" name="barcode" placeholder="📸 Barcode" required>
@@ -163,8 +162,8 @@
     <option value="Sports">🏅 Sports</option>
     <option value="Action">⚔️ Action</option>
     <option value="Racing">🏎️ Racing</option>
-    <option value="Adventure">🗺️ Adventure</option>
-    <option value="Fighting">🥊 Fighting</option>
+    <option value="Adventure">🗽️ Adventure</option>
+    <option value="Fighting">🏈 Fighting</option>
     <option value="Shooter">🔫 Shooter</option>
   </select>
 
@@ -182,7 +181,12 @@
   <button type="submit">➕ Add Game</button>
 </form>
 
-<!-- 📋 Game List -->
+<!-- Search box -->
+<div class="search-box">
+  <input type="text" id="search-bar" placeholder="🔍 Search games by name or barcode..." onkeyup="filterGames()">
+  <button type="button" onclick="clearSearch()">❌ Clear Search</button>
+</div>
+
 <hr>
 <h2>📋 Your Collection</h2>
 
@@ -211,7 +215,6 @@
   <p>No games in your library yet.</p>
 {% endif %}
 
-<!-- 📚 Scripts -->
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script src="/static/scanner.js"></script>
 
@@ -220,7 +223,7 @@ function previewCoverImage() {
     const fileInput = document.getElementById('cover_image');
     const preview = document.getElementById('cover_preview');
     const file = fileInput.files[0];
-    
+
     if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -232,6 +235,25 @@ function previewCoverImage() {
         preview.src = "";
         preview.style.display = "none";
     }
+}
+
+function filterGames() {
+  const input = document.getElementById('search-bar').value.toLowerCase();
+  const gameItems = document.querySelectorAll('li');
+
+  gameItems.forEach(item => {
+    const text = item.textContent.toLowerCase();
+    if (text.includes(input)) {
+      item.style.display = "";
+    } else {
+      item.style.display = "none";
+    }
+  });
+}
+
+function clearSearch() {
+  document.getElementById('search-bar').value = '';
+  filterGames();
 }
 </script>
 
